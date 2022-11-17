@@ -16,7 +16,10 @@ userRouter.post("/login", asyncHandler(async (req, res) => {
     if (user && user.status === "Pending"){
       res.status(401)
       throw new Error("Please confirm your email.")
-    } else if (user && (await user.matchPassword(password))) {
+    } else if(user && user.isBaned){
+      res.status(401)
+      throw new Error("You got banned, contact with support if you think its a mistake!")
+    }else if (user && (await user.matchPassword(password))) {
       res.json({
         _id: user._id,
         name: user.name,
@@ -43,7 +46,6 @@ userRouter.post("/", asyncHandler(async (req, res) => {
     for (let i = 0; i < 25; i++) {
         token += characters[Math.floor(Math.random() * characters.length )];
     }
-    console.log(token)
     if (userExists) {
       res.status(400);
       throw new Error("User already exists");
@@ -138,10 +140,11 @@ userRouter.put("/authMail", asyncHandler(async(req, res) => {
 }))
 
 //BORRADO LOGICO 
+
 userRouter.put("/ban", protect, admin, asyncHandler(async(req, res) => {
-    const { email } = req.body;
-    const user = await User.findOne({email: email})
-    
+    const { payload } = req.body;
+    const user = await User.findOne({email: payload})
+   
     if(user && !user.isAdmin){
       if(user && !user.isBaned) {
         user.isBaned = true
@@ -199,9 +202,11 @@ userRouter.put("/resetPass", asyncHandler(async(req, res) => {
 }));
 
 //CHANGE ADMIN STATUS  
+
 userRouter.put("/changeAdmin", protect, admin, asyncHandler(async(req, res) => {
-  const {email} = req.body;
-  const user = await User.findOne({email: email})
+  const {payload} = req.body;
+  const user = await User.findOne({email: payload})
+
   if(user && user.isOwner == false){
     user.isAdmin = !user.isAdmin
     user.save()

@@ -152,9 +152,9 @@ productRoute.post("/", protect, admin, asyncHandler(async (req, res) => {
 
 // UPDATE PRODUCT
 productRoute.put("/:id", protect, admin, asyncHandler(async (req, res) => {
-  const { name, price, description, image, countInStock, categories } = req.body;
+  const { name, price, description, image, countInStock, categorias } = req.body;
   const product = await Product.findById(req.params.id);
-  console.log(categories)
+  console.log(categorias)
   //const categorias = await categories.map(e=> Category.findOne({e}))
   if (product) {
     product.name = name || product.name;
