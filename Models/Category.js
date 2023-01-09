@@ -6,5 +6,5 @@ const categorySchema = new Schema({
 },
 {timestamps: false})
 
-const Category = mongoose.models.Category || mongoose.model("Category",categorySchema);
+const Category = mongoose.model("Category",categorySchema);
 export default Category;
